@@ -1,50 +1,30 @@
 const gulp = require('gulp');
-const rename = require('gulp-rename');
-const htmlmin = require('gulp-htmlmin');
-const babel = require('gulp-babel');
-const minify = require('gulp-minify');
-const less = require('gulp-less');
+const browserSync = require('browser-sync').create();
 
-// Javascript
-gulp.task('transpile', () => {
-  // Home
-  gulp.src('src/home/*.js', { base: 'src/home/' })
-  .pipe(babel({
-    presets: ['@babel/env']
-  }))
-  .pipe(minify({
-    noSource: true
-  }))
-  .pipe(gulp.dest('dist'));
+const jsTasks = require('./jsTasks');
+const htmlTasks = require('./htmlTasks');
+const cssTasks = require('./cssTasks');
+const imagesTasks = require('./imagesTasks');
+
+jsTasks.register(gulp, browserSync);
+htmlTasks.register(gulp, browserSync);
+cssTasks.register(gulp, browserSync);
+imagesTasks.register(gulp, browserSync);
+
+gulp.task('serve', ['default'], () => {
+  browserSync.init({
+    server: 'dist'
+  });
+
+  gulp.watch('src/**/*.js', [jsTasks.taskName]);
+  gulp.watch('src/**/*.html', [htmlTasks.taskName]);
+  gulp.watch('src/**/*.less', [cssTasks.taskName]);
+  gulp.watch('images/**/*.*', [imagesTasks.taskName]);
 });
 
-// Html
-gulp.task('copy-html', () => {
-  // Home
-  gulp.src('src/home/home.html')
-    .pipe(rename('index.html'))
-    .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest('dist'));
-
-  // About
-  gulp.src('src/about/about.html')
-    .pipe(rename('index.html'))
-    .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest('dist/about'));
-});
-
-// CSS
-gulp.task('less-to-css', () => {
-  // Home
-  gulp.src('src/home/home.less', { base: 'src/home' })
-  .pipe(less())
-  .pipe(gulp.dest('dist'));
-});
-
-// Images
-gulp.task('copy-images', () => {
-  gulp.src('images/**/*.*')
-    .pipe(gulp.dest('dist'));
-});
-
-gulp.task('default', ['transpile', 'copy-html', 'less-to-css', 'copy-images']);
+gulp.task('default', [
+  jsTasks.taskName,
+  htmlTasks.taskName,
+  cssTasks.taskName,
+  imagesTasks.taskName
+]);

@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "gulp serve",
     "build": "gulp"
   },
   "author": "",
@@ -11,6 +12,7 @@
   "devDependencies": {
     "@babel/core": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
+    "browser-sync": "^2.24.7",
     "gulp": "^3.9.1",
     "gulp-babel": "^8.0.0",
     "gulp-htmlmin": "^5.0.1",
